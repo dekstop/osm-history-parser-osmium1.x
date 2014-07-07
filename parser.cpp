@@ -17,6 +17,83 @@
 //#include <osmium/output/pbf.hpp>
 //#include <osmium/output/xml.hpp>
 
+
+class HistoryHandler : public Osmium::Handler::Base {
+protected:
+    std::ofstream &m_outfile;
+    int m_numNodes, m_numUNodes;
+    int m_numWays, m_numUWays;
+    int m_numRels, m_numURels;
+
+public:
+    HistoryHandler(std::ofstream &outfile) : Base(), m_outfile(outfile), m_numNodes(0), 
+        m_numUNodes(0), m_numWays(0), m_numUWays(0), m_numRels(0), m_numURels(0) {
+    }
+
+    void init (Osmium::OSM::Meta &meta) const {
+        if (meta.has_multiple_object_versions()) {
+            std::cout << "History file" << std::endl;
+        } else {
+            std::cout << "Non-history file" << std::endl;
+        }
+    }
+
+    void node(const shared_ptr<Osmium::OSM::Node const> &node) {
+        m_numNodes++;
+        if (node->user_is_anonymous()) return;
+        m_numUNodes++;
+        m_outfile <<  
+            node->id() << "\t" <<
+            node->timestamp() << "\t" <<
+            node->uid() << "\t" <<
+            //node->user() << "\t" <<
+            node->position().lon() << "\t" << node->position().lat() << std::endl;
+    }
+
+    void after_nodes() const {
+        std::cout << "Node versions: " << m_numNodes << std::endl;
+        std::cout << "Node versions with uid: " << m_numUNodes << std::endl;
+    }
+
+    void way(const shared_ptr< Osmium::OSM::Way const > &way) {
+        m_numWays++;
+        if (way->user_is_anonymous()) return;
+        m_numUWays++;
+//        std::cout << "Way: " << 
+//            way->id() << "\t" <<
+//            way->timestamp() << "\t" <<
+//            way->uid() << "\t" <<
+//            way->user() << "\t" <<
+//            //way->position().lon() << "," << way->position().lat() << "\t" <<
+//            std::endl;
+    }
+
+    void after_ways() const {
+        std::cout << "Way versions: " << m_numWays << std::endl;
+        std::cout << "Way versions with uid: " << m_numUWays << std::endl;
+    }
+
+    void relation(const shared_ptr< Osmium::OSM::Relation const > &relation) {
+        m_numRels++;
+        if (relation->user_is_anonymous()) return;
+        m_numURels++;
+//        std::cout << "Relation: " << 
+//            relation->id() << "\t" <<
+//            relation->timestamp() << "\t" <<
+//            relation->uid() << "\t" <<
+//            relation->user() << "\t" <<
+//            //relation->position().lon() << "," << relation->position().lat() << "\t" <<
+//            std::endl;
+    }
+    
+    void after_relations() const {
+        std::cout << "Relation versions: " << m_numRels << std::endl;
+        std::cout << "Relation versions with uid: " << m_numURels << std::endl;
+    }
+
+};
+
+
 int main(int argc, char *argv[]) {
     char *infilename, *outfilename;
 
@@ -27,14 +104,19 @@ int main(int argc, char *argv[]) {
     
     infilename = argv[1];
     Osmium::OSMFile infile(infilename);
+    if (infile.encoding()->is_pbf()) {
+        std::cout << "PBF file" << std::endl;
+    } else {
+        std::cout << "XML file" << std::endl;
+    }
     
     outfilename = argv[2];
     std::ofstream outfile;
     outfile.open(outfilename);
     outfile << infilename << std::endl;
 
-    //HistoryParser parser(outfile);
-    //Osmium::Input::read(infile, parser);
+    HistoryHandler hh(outfile);
+    Osmium::Input::read(infile, hh);
 
     outfile.close();
     return 0;

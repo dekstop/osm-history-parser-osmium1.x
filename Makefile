@@ -16,9 +16,9 @@ CXXFLAGS += `getconf LFS_CFLAGS`
 
 # compile & link against libxml to have xml writing support
 #CXXFLAGS += -DOSMIUM_WITH_OUTPUT_OSM_XML
-#CXXFLAGS += `xml2-config --cflags`
-#LDFLAGS = -L/usr/local/lib -lexpat -lpthread
-#LDFLAGS += `xml2-config --libs`
+CXXFLAGS += `xml2-config --cflags`
+LDFLAGS = -L/usr/local/lib -lexpat -lpthread
+LDFLAGS += `xml2-config --libs`
 
 # compile &  link against libs needed for protobuf reading and writing
 LDFLAGS += -lz -lprotobuf-lite -losmpbf
