@@ -21,9 +21,9 @@
 class HistoryHandler : public Osmium::Handler::Base {
 protected:
     std::ofstream &m_outfile;
-    int m_numNodes, m_numUNodes;
-    int m_numWays, m_numUWays;
-    int m_numRels, m_numURels;
+    long m_numNodes, m_numUNodes;
+    long m_numWays, m_numUWays;
+    long m_numRels, m_numURels;
 
 public:
     HistoryHandler(std::ofstream &outfile) : Base(), m_outfile(outfile), m_numNodes(0), 
@@ -43,10 +43,8 @@ public:
         if (node->user_is_anonymous()) return;
         m_numUNodes++;
         m_outfile <<  
-            node->id() << "\t" <<
             node->timestamp() << "\t" <<
             node->uid() << "\t" <<
-            //node->user() << "\t" <<
             node->position().lon() << "\t" << node->position().lat() << std::endl;
     }
 
@@ -60,10 +58,8 @@ public:
         if (way->user_is_anonymous()) return;
         m_numUWays++;
 //        std::cout << "Way: " << 
-//            way->id() << "\t" <<
 //            way->timestamp() << "\t" <<
 //            way->uid() << "\t" <<
-//            way->user() << "\t" <<
 //            //way->position().lon() << "," << way->position().lat() << "\t" <<
 //            std::endl;
     }
@@ -78,10 +74,8 @@ public:
         if (relation->user_is_anonymous()) return;
         m_numURels++;
 //        std::cout << "Relation: " << 
-//            relation->id() << "\t" <<
 //            relation->timestamp() << "\t" <<
 //            relation->uid() << "\t" <<
-//            relation->user() << "\t" <<
 //            //relation->position().lon() << "," << relation->position().lat() << "\t" <<
 //            std::endl;
     }
@@ -113,7 +107,6 @@ int main(int argc, char *argv[]) {
     outfilename = argv[2];
     std::ofstream outfile;
     outfile.open(outfilename);
-    outfile << infilename << std::endl;
 
     HistoryHandler hh(outfile);
     Osmium::Input::read(infile, hh);
