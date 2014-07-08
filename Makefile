@@ -30,14 +30,14 @@ LDFLAGS += -lz -lprotobuf-lite -losmpbf
 
 .PHONY: all clean install
 
-all: osm-history-parser
+all: user-edit-location
 
-osm-history-parser: parser.cpp
+user-edit-location: user_edit_location.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
-install: osm-history-parser
+install: user-edit-location
 	install -m 755 -g root -o root -d $(DESTDIR)$(PREFIX)/bin
-	install -m 755 -g root -o root osm-history-parser $(DESTDIR)$(PREFIX)/bin/osm-history-parser
+	install -m 755 -g root -o root user-edit-location $(DESTDIR)$(PREFIX)/bin/user-edit-location
 
 clean:
-	rm -f *.o core osm-history-parser
+	rm -f *.o core user-edit-location
