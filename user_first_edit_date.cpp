@@ -62,6 +62,9 @@ public:
                 it->first << "\t" <<
                 it->second << std::endl;
         }
+
+        // Terminate early: don't parse ways and relations.
+        throw Osmium::Handler::StopReading();
     }
 
     void way(const shared_ptr< Osmium::OSM::Way const > &way) {

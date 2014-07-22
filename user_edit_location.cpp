@@ -51,6 +51,9 @@ public:
     void after_nodes() const {
         std::cout << "Node versions: " << m_numNodes << std::endl;
         std::cout << "Node versions with uid: " << m_numUNodes << std::endl;
+
+        // Terminate early: don't parse ways and relations.
+        throw Osmium::Handler::StopReading();
     }
 
     void way(const shared_ptr< Osmium::OSM::Way const > &way) {
