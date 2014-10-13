@@ -46,9 +46,10 @@ public:
         m_numUNodes++;
 
         osm_user_id_t uid = node->uid();
-        const char * name = node->user();
         std::unordered_map<osm_user_id_t, const char *>::const_iterator it = uid_name.find(uid);
-        if (it == uid_name.end() || strcmp(it->second, name)!=0) {
+        if (it == uid_name.end()) {
+            char *name = new char[strlen(node->user()) + 1];
+            strcpy(name, node->user());
             uid_name[uid] = name;
         }
     }
@@ -61,6 +62,7 @@ public:
             m_outfile <<  
                 it->first << "\t" <<
                 it->second << std::endl;
+            delete[] it->second;
         }
 
         // Terminate early: don't parse ways and relations.
