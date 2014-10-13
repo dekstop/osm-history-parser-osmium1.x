@@ -31,7 +31,7 @@ LDFLAGS += -lz -lprotobuf-lite -losmpbf
 
 .PHONY: all clean install
 
-all: user-edit-location user-first-edit-date
+all: user-edit-location user-first-edit-date user-uid-name-map
 
 user-edit-location: user_edit_location.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
@@ -39,11 +39,15 @@ user-edit-location: user_edit_location.cpp
 user-first-edit-date: user_first_edit_date.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
-install: user-edit-location user-first-edit-date
+user-uid-name-map: user_uid_name_map.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+
+install: user-edit-location user-first-edit-date user-uid-name-map
 	install -m 755 -g root -o root -d $(DESTDIR)$(PREFIX)/bin
 	install -m 755 -g root -o root user-edit-location $(DESTDIR)$(PREFIX)/bin/user-edit-location
 	install -m 755 -g root -o root user-first-edit-date $(DESTDIR)$(PREFIX)/bin/user-first-edit-date
+	install -m 755 -g root -o root user-uid-name-map $(DESTDIR)$(PREFIX)/bin/user-uid-name-map
 
 clean:
-	rm -f *.o core user-edit-location user-first-edit-date
+	rm -f *.o core user-edit-location user-first-edit-date user-uid-name-map
 
