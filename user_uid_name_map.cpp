@@ -18,10 +18,10 @@
 //#include <osmium/output/pbf.hpp>
 //#include <osmium/output/xml.hpp>
 
-
+// main
 class HistoryHandler : public Osmium::Handler::Base {
 protected:
-    std::unordered_map<osm_user_id_t, const char *> uid_name;
+    std::unordered_map<osm_user_id_t, std::string> uid_name;
     std::ofstream &m_outfile;
     long m_numNodes, m_numUNodes;
     long m_numWays, m_numUWays;
@@ -46,10 +46,9 @@ public:
         m_numUNodes++;
 
         osm_user_id_t uid = node->uid();
-        std::unordered_map<osm_user_id_t, const char *>::const_iterator it = uid_name.find(uid);
+        std::unordered_map<osm_user_id_t, std::string>::const_iterator it = uid_name.find(uid);
         if (it == uid_name.end()) {
-            char *name = new char[strlen(node->user()) + 1];
-            strcpy(name, node->user());
+            std::string name(node->user());
             uid_name[uid] = name;
         }
     }
@@ -62,7 +61,6 @@ public:
             m_outfile <<  
                 it->first << "\t" <<
                 it->second << std::endl;
-            delete[] it->second;
         }
 
         // Terminate early: don't parse ways and relations.
