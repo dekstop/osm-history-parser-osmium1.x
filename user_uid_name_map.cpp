@@ -27,6 +27,24 @@ protected:
     long m_numWays, m_numUWays;
     long m_numRels, m_numURels;
 
+    bool add_user(const osm_user_id_t uid, const char* name) {
+        std::unordered_map<osm_user_id_t, std::string>::const_iterator it = uid_name.find(uid);
+        if (it == uid_name.end()) {
+            std::string str_name(name);
+            uid_name[uid] = str_name;
+            return true;
+        }
+        return false;
+    }
+
+    void save_map() const {
+        for (auto it = uid_name.cbegin(); it != uid_name.cend(); ++it) {
+            m_outfile <<  
+                it->first << "\t" <<
+                it->second << std::endl;
+        }
+    }
+
 public:
     HistoryHandler(std::ofstream &outfile) : Base(), m_outfile(outfile), m_numNodes(0), 
         m_numUNodes(0), m_numWays(0), m_numUWays(0), m_numRels(0), m_numURels(0) {
@@ -45,37 +63,23 @@ public:
         if (node->user_is_anonymous()) return;
         m_numUNodes++;
 
-        osm_user_id_t uid = node->uid();
-        std::unordered_map<osm_user_id_t, std::string>::const_iterator it = uid_name.find(uid);
-        if (it == uid_name.end()) {
-            std::string name(node->user());
-            uid_name[uid] = name;
-        }
+        add_user(node->uid(), node->user());
     }
 
     void after_nodes() const {
         std::cout << "Node versions: " << m_numNodes << std::endl;
         std::cout << "Node versions with uid: " << m_numUNodes << std::endl;
         
-        for (auto it = uid_name.cbegin(); it != uid_name.cend(); ++it) {
-            m_outfile <<  
-                it->first << "\t" <<
-                it->second << std::endl;
-        }
-
         // Terminate early: don't parse ways and relations.
-        throw Osmium::Handler::StopReading();
+        // throw Osmium::Handler::StopReading();
     }
 
     void way(const shared_ptr< Osmium::OSM::Way const > &way) {
         m_numWays++;
         if (way->user_is_anonymous()) return;
         m_numUWays++;
-//        std::cout << "Way: " << 
-//            way->timestamp() << "\t" <<
-//            way->uid() << "\t" <<
-//            //way->position().lon() << "," << way->position().lat() << "\t" <<
-//            std::endl;
+
+        add_user(way->uid(), way->user());
     }
 
     void after_ways() const {
@@ -87,16 +91,15 @@ public:
         m_numRels++;
         if (relation->user_is_anonymous()) return;
         m_numURels++;
-//        std::cout << "Relation: " << 
-//            relation->timestamp() << "\t" <<
-//            relation->uid() << "\t" <<
-//            //relation->position().lon() << "," << relation->position().lat() << "\t" <<
-//            std::endl;
+
+        add_user(relation->uid(), relation->user());
     }
     
     void after_relations() const {
         std::cout << "Relation versions: " << m_numRels << std::endl;
         std::cout << "Relation versions with uid: " << m_numURels << std::endl;
+
+        save_map();
     }
 
 };
