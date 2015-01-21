@@ -73,6 +73,7 @@ public:
         for (const Osmium::OSM::Tag& tag : node->tags()) {
             m_tagfile <<
                 node->id() << "\t" <<
+                node->version() << "\t" <<
                 escape(tag.key()) << "\t" <<
                 escape(tag.value()) << std::endl;
         }
