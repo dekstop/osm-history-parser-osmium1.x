@@ -65,7 +65,7 @@ public:
             node->id() << "\t" <<
             node->version() << "\t" <<
             node->changeset() << "\t" <<
-            node->timestamp() << "\t" <<
+            node->timestamp_as_string() << "\t" <<
             node->uid() << "\t" <<
             escape(node->user()) << "\t" <<
             node->lat() << "\t" <<
