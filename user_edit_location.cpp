@@ -42,10 +42,17 @@ public:
         m_numNodes++;
         if (node->user_is_anonymous()) return;
         m_numUNodes++;
-        m_outfile <<  
-            node->timestamp() << "\t" <<
-            node->uid() << "\t" <<
-            node->position().lon() << "\t" << node->position().lat() << std::endl;
+        if (node->position().defined()) {
+            m_outfile <<  
+                node->timestamp() << "\t" <<
+                node->uid() << "\t" <<
+                node->position().lon() << "\t" << node->position().lat() << std::endl;
+        } else {
+            m_outfile <<  
+                node->timestamp() << "\t" <<
+                node->uid() << "\t" <<
+                "\t" << std::endl;
+        }
     }
 
     void after_nodes() const {

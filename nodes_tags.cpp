@@ -67,9 +67,14 @@ public:
             node->changeset() << "\t" <<
             node->timestamp_as_string() << "\t" <<
             node->uid() << "\t" <<
-            escape(node->user()) << "\t" <<
-            node->lat() << "\t" <<
-            node->lon() << std::endl;
+            escape(node->user()) << "\t";
+        if (node->position().defined()) {
+            m_nodefile << 
+                node->position().lat() << "\t" <<
+                node->position().lon() << std::endl;
+        } else {
+            m_nodefile << "\t" << std::endl;
+        }
         for (const Osmium::OSM::Tag& tag : node->tags()) {
             m_tagfile <<
                 node->id() << "\t" <<
