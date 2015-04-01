@@ -31,9 +31,12 @@ LDFLAGS += -lz -lprotobuf-lite -losmpbf
 
 .PHONY: all clean install
 
-all: nodes-tags user-edit-location user-first-edit-date user-uid-name-map
+all: nodes-tags user-edit-history user-edit-location user-first-edit-date user-uid-name-map
 
 nodes-tags: nodes_tags.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+
+user-edit-history: user_edit_history.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
 user-edit-location: user_edit_location.cpp
