@@ -26,6 +26,22 @@ protected:
     long m_numNodes, m_numUNodes;
     long m_numWays, m_numUWays;
     long m_numRels, m_numURels;
+    
+    // http://stackoverflow.com/questions/1494399/how-do-i-search-find-and-replace-in-a-standard-string
+    std::string ReplaceString(std::string subject, const std::string& search,
+        const std::string& replace) const {
+
+        size_t pos = 0;
+        while((pos = subject.find(search, pos)) != std::string::npos) {
+            subject.replace(pos, search.length(), replace);
+            pos += replace.length();
+        }
+        return subject;
+    }
+
+    std::string escape(const std::string str) const {
+        return ReplaceString(ReplaceString(ReplaceString(ReplaceString(str, "\\", "\\\\"), "\n", "\\n"), "\t", "\\t"), "\r", "\\r");
+    }
 
     bool add_user(const osm_user_id_t uid, const char* name) {
         std::unordered_map<osm_user_id_t, std::string>::const_iterator it = uid_name.find(uid);
@@ -41,7 +57,7 @@ protected:
         for (auto it = uid_name.cbegin(); it != uid_name.cend(); ++it) {
             m_outfile <<  
                 it->first << "\t" <<
-                it->second << std::endl;
+                escape(it->second) << std::endl;
         }
     }
 
